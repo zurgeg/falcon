@@ -101,7 +101,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_falcon_OBJECTS = boot0.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_falcon_OBJECTS = src/boot0.$(OBJEXT)
 falcon_OBJECTS = $(am_falcon_OBJECTS)
 falcon_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -117,8 +118,10 @@ am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
 am__v_at_1 = 
 DEFAULT_INCLUDES = -I.
-depcomp =
-am__maybe_remake_depfiles =
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__maybe_remake_depfiles = depfiles
+am__depfiles_remade = src/$(DEPDIR)/boot0.Po
+am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_$(V))
@@ -156,8 +159,8 @@ am__define_uniq_tagged_files = \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in README compile install-sh \
-	missing
+am__DIST_COMMON = $(srcdir)/Makefile.in README.md compile depcomp \
+	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -185,12 +188,14 @@ AUTOHEADER = ${SHELL} '/home/jg/Documents/falcon/missing' autoheader
 AUTOMAKE = ${SHELL} '/home/jg/Documents/falcon/missing' automake-1.16
 AWK = gawk
 CC = gcc
+CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPPFLAGS = 
 CSCOPE = cscope
 CTAGS = ctags
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"falcon\" -DPACKAGE_TARNAME=\"falcon\" -DPACKAGE_VERSION=\"v0.1.0-boot0\" -DPACKAGE_STRING=\"falcon\ v0.1.0-boot0\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"falcon\" -DVERSION=\"v0.1.0-boot0\"
+DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
@@ -225,7 +230,9 @@ abs_srcdir = /home/jg/Documents/falcon
 abs_top_builddir = /home/jg/Documents/falcon
 abs_top_srcdir = /home/jg/Documents/falcon
 ac_ct_CC = gcc
+am__include = include
 am__leading_dot = .
+am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
@@ -261,7 +268,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-falcon_SOURCES = boot0.c
+falcon_SOURCES = src/boot0.c
 all: all-am
 
 .SUFFIXES:
@@ -272,15 +279,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign --ignore-deps'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign --ignore-deps \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign --ignore-deps Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign --ignore-deps Makefile
+	  $(AUTOMAKE) --foreign Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -341,6 +348,13 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+src/$(am__dirstamp):
+	@$(MKDIR_P) src
+	@: > src/$(am__dirstamp)
+src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/$(DEPDIR)
+	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/boot0.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 
 falcon$(EXEEXT): $(falcon_OBJECTS) $(falcon_DEPENDENCIES) $(EXTRA_falcon_DEPENDENCIES) 
 	@rm -f falcon$(EXEEXT)
@@ -348,15 +362,34 @@ falcon$(EXEEXT): $(falcon_OBJECTS) $(falcon_DEPENDENCIES) $(EXTRA_falcon_DEPENDE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+include src/$(DEPDIR)/boot0.Po # am--include-marker
+
+$(am__depfiles_remade):
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+am--depfiles: $(am__depfiles_remade)
+
 .c.o:
-	$(AM_V_CC)$(COMPILE) -c -o $@ $<
+	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
+#	$(AM_V_CC)source='$<' object='$@' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-	$(AM_V_CC)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
+#	$(AM_V_CC)source='$<' object='$@' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -621,6 +654,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -631,6 +666,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+		-rm -f src/$(DEPDIR)/boot0.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -678,6 +714,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
+		-rm -f src/$(DEPDIR)/boot0.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -697,9 +734,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-cscope clean-generic cscope \
-	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
+	check-am clean clean-binPROGRAMS clean-cscope clean-generic \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
 	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
 	dist-zstd distcheck distclean distclean-compile \
 	distclean-generic distclean-tags distcleancheck distdir \
