@@ -1,2 +1,2 @@
 bin_PROGRAMS = falcon
-falcon_SOURCES = boot0.c
+falcon_SOURCES = src/boot0.c
