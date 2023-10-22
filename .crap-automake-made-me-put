@@ -2,3 +2,4 @@ configure
 install-sh
 missing
 Makefile.in
+depcomp
