@@ -11,10 +11,6 @@ FFFF0050                 MOV     LR, #0
 int global0 = 0x0; // r1
 int global1 = 0x0; // r4
 int global2 = 0x0; // r11
-// _start
-void main(){
-    realmain();
-}
 
 // main
 void realmain(){
@@ -41,4 +37,9 @@ void realmain(){
     var5 = global2 = 0x54;
     // STR     R9, [R3]         ; write 0 to AES command reg
 
+}
+
+// _start
+void main(){
+    realmain();
 }
