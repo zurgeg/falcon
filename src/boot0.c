@@ -7,8 +7,11 @@ FFFF0048                 MOV     R11, #0
 FFFF004C                 MOV     R11, #0
 FFFF0050                 MOV     LR, #0
 */
-
-int global0 = 0x0; // r1
+#include <boot1_key.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+unsigned char *global0; // r1
 int global1 = 0x0; // r4
 int global2 = 0x0; // r11
 
@@ -17,6 +20,7 @@ void realmain(){
     int var1, var2, var3, var4, var5; // registers
     int memval_D800060; // memory
     int *aesCommandRegister = &memval_D800060; // AES command register (D800060)
+    global0 = (unsigned char*)malloc(16);
     // MOV     R12, SP
     var1 = 0xD417C00; // top of SRAM, R12
     // SP is set to 0xD417C00 in _start, so it doesn't matter
@@ -36,6 +40,13 @@ void realmain(){
     // SUB     R2, R11, #0x54
     var5 = global2 = 0x54;
     // STR     R9, [R3]         ; write 0 to AES command reg
+    // R3 is used as a pointer here, but
+    // it just points to AES command register so
+    // we dereference it into R9 (var3)
+    var3 = *aesCommandRegister;
+    *global0 = (unsigned char)BOOT1_KEY;
+    printf("boot1 aes key addr = %u", global0);
+
 
 }
 
