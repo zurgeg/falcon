@@ -7,6 +7,8 @@ config.status
 *.o
 */.deps
 */.dirstamp
-Makefile 
+Makefile
+# gdb
+.gdb_history 
 # Executables
 falcon

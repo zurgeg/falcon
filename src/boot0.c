@@ -16,14 +16,17 @@ unsigned int *global0; // r1
 int global1 = 0x0; // r4
 int global2 = 0x0; // r11
 
+unsigned int* memory;
+
 // main
 void realmain(){
     int var1, var3, var4, var5, var6; // registers
-    int memval_D800060, memval_D417BA8; // memory
     int returnValue; // LR
-    int *aesCommandRegister = &memval_D800060; // AES command register (D800060)
     global0 = (unsigned int*)malloc(16); // R1 is used to store the AES key
     unsigned int *var2 = (uint32_t*)malloc(16); 
+    memory =  (unsigned int *)malloc(0x3D09000); // we don't need this much ram
+    // but whatever
+    int *aesCommandRegister = memory + 0xD800060; // AES command register (D800060)
     // MOV     R12, SP
     var1 = 0xD417C00; // top of SRAM, R12
     // SP is set to 0xD417C00 in _start, so it doesn't matter
@@ -40,7 +43,7 @@ void realmain(){
     var4 = 7; // R1
     var5 = 0xD800000; // R2
     // STR     R1, [R2,#0x60]
-    memval_D800060 = var4;
+    *(memory + (var5 + 60)) = var4;
     // SUB     R2, R11, #0x54
     var5 = global2 - 0x54;
     // STR     R9, [R3]         ; write 0 to AES command reg
@@ -54,7 +57,7 @@ void realmain(){
     *(global0 + 8) = BOOT1_KEY_P3;
     *(global0 + 12) = BOOT1_KEY_P4; // please help
     assert((*global0 == BOOT1_KEY_P1));
-    var3 = memval_D417BA8; // what is this on real hw?
+    *(memory + 0xD417BA8) = var3; // what is this on real hw?
     var6 = *var2; // R0
     var5 = 3;
     returnValue = 0xD400000;
