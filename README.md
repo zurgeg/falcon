@@ -7,6 +7,32 @@ This version is compatible with:
 - boot1: ?
 - boot2: ?
 
+## Psuedo-decompilation
+For "psuedo-decompilation", we "decompile" a stage by just taking its instructions and changing them into setting memory and registers, so:
+```s
+mov R1, 0x1
+STR R1, #0xD800000
+```
+becomes
+```c
+*(registers + R1) = 0x1;
+*(memory + 0xD800000) = *(registers + R1);
+```
+
+## Progress
+Bold is the current stage
+- [ ] **Psuedo-decompile boot0**
+- [ ] Psuedo-decompile boot1
+- [ ] Psuedo-decompile boot2
+- [ ] Test against real HW behavior
+- [ ] Actually decompile boot0
+- [ ] Test against previous boot0 behavior
+- [ ] Actually decompile boot1
+- [ ] Test against previous boot1 behavior
+- [ ] Actually decompile boot2
+- [ ] Test against previous boot2 behavior
+- [ ] Psuedo-decompile System Menu
+- *Who knows what's next?*
 ## Why?
 
 The main goal of Falcon is for me to practice decompiling C,
