@@ -41,6 +41,7 @@ void boot0_main(){
     // I don't see why you'd want that but
     // whatever
     pushRegisters();
+    printf("regs pushed\n");
     *(registers + R3) = 0xD000000;
     *(registers + R11) = *(registers + R12) + 4;
     *(registers + R3) += 0x20000; // AES command register
