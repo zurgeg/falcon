@@ -37,17 +37,17 @@ void boot0_main(){
     *(boot1_key_ptr + 4) = (unsigned long)BOOT1_KEY_P2;
     *(boot1_key_ptr + 8) = (unsigned long)BOOT1_KEY_P3;
     *(boot1_key_ptr + 12) = (unsigned long)BOOT1_KEY_P4;
-    *(registers + R12) = *sp; // preserve SP onto R12
+    *(registers + R12) = *(registers + SP); // preserve SP onto R12
     // I don't see why you'd want that but
     // whatever
     pushRegisters();
-    *(registers + R3) = 0xD000000; // <- ADDRESS BOUNDARY ERROR HERE
+    *(registers + R3) = 0xD000000;
     *(registers + R11) = *(registers + R12) + 4;
     *(registers + R3) += 0x20000; // AES command register
     *(registers + R9) = 0;
     *(registers + R1) = 7;
     *(registers + R2) = 0xD800000;
-    *(memory + *(registers + R2) + 0x60) = *(registers + R1);
+    *(memory + *(registers + R2) + 0x60) = *(registers + R1); // <- ADDRESS BOUNDARY ERROR HERE
     *(registers + R2) = *(registers + R11) - 0x54;
     *(registers + R9) = *(memory + *(registers + R3));
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
