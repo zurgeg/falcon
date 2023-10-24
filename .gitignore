@@ -7,6 +7,7 @@ config.status
 **/*.o
 **/.deps
 **/.dirstamp
+*.diff
 Makefile
 # gdb
 .gdb_history 
