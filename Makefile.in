@@ -103,6 +103,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_falcon_OBJECTS = src/falcon-boot0.$(OBJEXT) \
+	src/hw/falcon-aes_eng.$(OBJEXT) \
 	tiny-AES-c/falcon-aes.$(OBJEXT)
 falcon_OBJECTS = $(am_falcon_OBJECTS)
 falcon_LDADD = $(LDADD)
@@ -124,6 +125,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/falcon-boot0.Po \
+	src/hw/$(DEPDIR)/falcon-aes_eng.Po \
 	tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -276,7 +278,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-falcon_SOURCES = src/boot0.c tiny-AES-c/aes.c
+falcon_SOURCES = src/boot0.c src/hw/aes_eng.c tiny-AES-c/aes.c
 falcon_CFLAGS = -Wall -Wpedantic -Werror
 all: all-am
 
@@ -365,6 +367,14 @@ src/$(DEPDIR)/$(am__dirstamp):
 	@: > src/$(DEPDIR)/$(am__dirstamp)
 src/falcon-boot0.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/hw/$(am__dirstamp):
+	@$(MKDIR_P) src/hw
+	@: > src/hw/$(am__dirstamp)
+src/hw/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/hw/$(DEPDIR)
+	@: > src/hw/$(DEPDIR)/$(am__dirstamp)
+src/hw/falcon-aes_eng.$(OBJEXT): src/hw/$(am__dirstamp) \
+	src/hw/$(DEPDIR)/$(am__dirstamp)
 tiny-AES-c/$(am__dirstamp):
 	@$(MKDIR_P) tiny-AES-c
 	@: > tiny-AES-c/$(am__dirstamp)
@@ -381,12 +391,14 @@ falcon$(EXEEXT): $(falcon_OBJECTS) $(falcon_DEPENDENCIES) $(EXTRA_falcon_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
+	-rm -f src/hw/*.$(OBJEXT)
 	-rm -f tiny-AES-c/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/falcon-boot0.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/hw/$(DEPDIR)/falcon-aes_eng.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tiny-AES-c/$(DEPDIR)/falcon-aes.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -424,6 +436,20 @@ src/falcon-boot0.obj: src/boot0.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/boot0.c' object='src/falcon-boot0.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o src/falcon-boot0.obj `if test -f 'src/boot0.c'; then $(CYGPATH_W) 'src/boot0.c'; else $(CYGPATH_W) '$(srcdir)/src/boot0.c'; fi`
+
+src/hw/falcon-aes_eng.o: src/hw/aes_eng.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT src/hw/falcon-aes_eng.o -MD -MP -MF src/hw/$(DEPDIR)/falcon-aes_eng.Tpo -c -o src/hw/falcon-aes_eng.o `test -f 'src/hw/aes_eng.c' || echo '$(srcdir)/'`src/hw/aes_eng.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/hw/$(DEPDIR)/falcon-aes_eng.Tpo src/hw/$(DEPDIR)/falcon-aes_eng.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/hw/aes_eng.c' object='src/hw/falcon-aes_eng.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o src/hw/falcon-aes_eng.o `test -f 'src/hw/aes_eng.c' || echo '$(srcdir)/'`src/hw/aes_eng.c
+
+src/hw/falcon-aes_eng.obj: src/hw/aes_eng.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT src/hw/falcon-aes_eng.obj -MD -MP -MF src/hw/$(DEPDIR)/falcon-aes_eng.Tpo -c -o src/hw/falcon-aes_eng.obj `if test -f 'src/hw/aes_eng.c'; then $(CYGPATH_W) 'src/hw/aes_eng.c'; else $(CYGPATH_W) '$(srcdir)/src/hw/aes_eng.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/hw/$(DEPDIR)/falcon-aes_eng.Tpo src/hw/$(DEPDIR)/falcon-aes_eng.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/hw/aes_eng.c' object='src/hw/falcon-aes_eng.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o src/hw/falcon-aes_eng.obj `if test -f 'src/hw/aes_eng.c'; then $(CYGPATH_W) 'src/hw/aes_eng.c'; else $(CYGPATH_W) '$(srcdir)/src/hw/aes_eng.c'; fi`
 
 tiny-AES-c/falcon-aes.o: tiny-AES-c/aes.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT tiny-AES-c/falcon-aes.o -MD -MP -MF tiny-AES-c/$(DEPDIR)/falcon-aes.Tpo -c -o tiny-AES-c/falcon-aes.o `test -f 'tiny-AES-c/aes.c' || echo '$(srcdir)/'`tiny-AES-c/aes.c
@@ -704,6 +730,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f src/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/$(am__dirstamp)
+	-rm -f src/hw/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/hw/$(am__dirstamp)
 	-rm -f tiny-AES-c/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tiny-AES-c/$(am__dirstamp)
 
@@ -717,6 +745,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f src/$(DEPDIR)/falcon-boot0.Po
+	-rm -f src/hw/$(DEPDIR)/falcon-aes_eng.Po
 	-rm -f tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -766,6 +795,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f src/$(DEPDIR)/falcon-boot0.Po
+	-rm -f src/hw/$(DEPDIR)/falcon-aes_eng.Po
 	-rm -f tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
