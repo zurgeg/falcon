@@ -31,7 +31,7 @@ void dump(){
 
 void boot0_main(){
     unsigned int *boot1_key_ptr = (unsigned int*)malloc(0xFFFF); // we kinda cheat here
-    unsigned int *boot1_iv_ptr = (unsigned int*)malloc(16);
+    //unsigned int *boot1_iv_ptr = (unsigned int*)malloc(16);
     // boot1 IV is empty...
     *(boot1_key_ptr) = (unsigned long)BOOT1_KEY_P1;
     *(boot1_key_ptr + 4) = (unsigned long)BOOT1_KEY_P2;
@@ -49,11 +49,19 @@ void boot0_main(){
     *(registers + R2) = 0xD800000;
     printf("start of debug line hit\n");
     //---DEBUG POLICE LINE---DO NOT CROSS---
-    //*(memory + *(registers + R2) + 0x60) = *(registers + R1);
-    *(registers + R2) = *(registers + R11) - 0x54;
+    //*(memory + *(registers + R2) + 0x60) = *(registers + R1); // here
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  <- specifically here
+    // nullptr dereference?
     //---DEBUG POLICE LINE---DO NOT CROSS---
     printf("end of debug line hit\n");
-    *(registers + R9) = *(memory + *(registers + R3));
+    printf("start of debug line hit\n");
+    *(registers + R2) = *(registers + R11) - 0x54;
+    //---DEBUG POLICE LINE---DO NOT CROSS---
+    //*(registers + R9) = *(memory + *(registers + R3)); // here
+    //^^^^^^^^^^^^^^^^^  <- specifically here
+    // probably outofbounds read
+    //---DEBUG POLICE LINE---DO NOT CROSS---
+    printf("end of debug line hit\n");
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
     *(registers + R0) = *(registers + R3);
     *(registers + LR) = 0xD400000;
@@ -66,19 +74,21 @@ void boot0_main(){
     FFFF0158                 BPL     set_AES_key
     */
    printf("setting aes key...\n");
+   /*
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(memory + (*registers + R1)); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
         // why >:(
         *(memory + (*registers + R0) + 0xC) = *(registers + R3);
-        /* BPL     set_AES_key; jump back if pos flag is cleared
-        ; a.k.a checks if the R2 subtract ended with a negative number (R2 >= 0)
-        */
+        // BPL     set_AES_key; jump back if pos flag is cleared
+        // ; a.k.a checks if the R2 subtract ended with a negative number (R2 >= 0)
     }
     printf("set aes key for boot1\n");
     // Jump not taken
     *(registers + R1) = (unsigned long)boot1_iv_ptr;
+    */
+   // the code above is invalid due to the debugging
 
 }
 
