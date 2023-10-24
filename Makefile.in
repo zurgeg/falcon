@@ -102,9 +102,12 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_falcon_OBJECTS = src/boot0.$(OBJEXT)
+am_falcon_OBJECTS = src/falcon-boot0.$(OBJEXT) \
+	tiny-AES-c/falcon-aes.$(OBJEXT)
 falcon_OBJECTS = $(am_falcon_OBJECTS)
 falcon_LDADD = $(LDADD)
+falcon_LINK = $(CCLD) $(falcon_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -120,8 +123,13 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = src/$(DEPDIR)/boot0.Po
+am__depfiles_remade = src/$(DEPDIR)/falcon-boot0.Po \
+	tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_@AM_V@)
@@ -268,7 +276,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-falcon_SOURCES = src/boot0.c
+falcon_SOURCES = src/boot0.c tiny-AES-c/aes.c
+falcon_CFLAGS = -Wall -Wpedantic -Werror
 all: all-am
 
 .SUFFIXES:
@@ -354,20 +363,31 @@ src/$(am__dirstamp):
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/boot0.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/falcon-boot0.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+tiny-AES-c/$(am__dirstamp):
+	@$(MKDIR_P) tiny-AES-c
+	@: > tiny-AES-c/$(am__dirstamp)
+tiny-AES-c/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tiny-AES-c/$(DEPDIR)
+	@: > tiny-AES-c/$(DEPDIR)/$(am__dirstamp)
+tiny-AES-c/falcon-aes.$(OBJEXT): tiny-AES-c/$(am__dirstamp) \
+	tiny-AES-c/$(DEPDIR)/$(am__dirstamp)
 
 falcon$(EXEEXT): $(falcon_OBJECTS) $(falcon_DEPENDENCIES) $(EXTRA_falcon_DEPENDENCIES) 
 	@rm -f falcon$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(falcon_OBJECTS) $(falcon_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(falcon_LINK) $(falcon_OBJECTS) $(falcon_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
+	-rm -f tiny-AES-c/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/boot0.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/falcon-boot0.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tiny-AES-c/$(DEPDIR)/falcon-aes.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -390,6 +410,34 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+src/falcon-boot0.o: src/boot0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT src/falcon-boot0.o -MD -MP -MF src/$(DEPDIR)/falcon-boot0.Tpo -c -o src/falcon-boot0.o `test -f 'src/boot0.c' || echo '$(srcdir)/'`src/boot0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/falcon-boot0.Tpo src/$(DEPDIR)/falcon-boot0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/boot0.c' object='src/falcon-boot0.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o src/falcon-boot0.o `test -f 'src/boot0.c' || echo '$(srcdir)/'`src/boot0.c
+
+src/falcon-boot0.obj: src/boot0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT src/falcon-boot0.obj -MD -MP -MF src/$(DEPDIR)/falcon-boot0.Tpo -c -o src/falcon-boot0.obj `if test -f 'src/boot0.c'; then $(CYGPATH_W) 'src/boot0.c'; else $(CYGPATH_W) '$(srcdir)/src/boot0.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/falcon-boot0.Tpo src/$(DEPDIR)/falcon-boot0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/boot0.c' object='src/falcon-boot0.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o src/falcon-boot0.obj `if test -f 'src/boot0.c'; then $(CYGPATH_W) 'src/boot0.c'; else $(CYGPATH_W) '$(srcdir)/src/boot0.c'; fi`
+
+tiny-AES-c/falcon-aes.o: tiny-AES-c/aes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT tiny-AES-c/falcon-aes.o -MD -MP -MF tiny-AES-c/$(DEPDIR)/falcon-aes.Tpo -c -o tiny-AES-c/falcon-aes.o `test -f 'tiny-AES-c/aes.c' || echo '$(srcdir)/'`tiny-AES-c/aes.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tiny-AES-c/$(DEPDIR)/falcon-aes.Tpo tiny-AES-c/$(DEPDIR)/falcon-aes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tiny-AES-c/aes.c' object='tiny-AES-c/falcon-aes.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o tiny-AES-c/falcon-aes.o `test -f 'tiny-AES-c/aes.c' || echo '$(srcdir)/'`tiny-AES-c/aes.c
+
+tiny-AES-c/falcon-aes.obj: tiny-AES-c/aes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -MT tiny-AES-c/falcon-aes.obj -MD -MP -MF tiny-AES-c/$(DEPDIR)/falcon-aes.Tpo -c -o tiny-AES-c/falcon-aes.obj `if test -f 'tiny-AES-c/aes.c'; then $(CYGPATH_W) 'tiny-AES-c/aes.c'; else $(CYGPATH_W) '$(srcdir)/tiny-AES-c/aes.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tiny-AES-c/$(DEPDIR)/falcon-aes.Tpo tiny-AES-c/$(DEPDIR)/falcon-aes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tiny-AES-c/aes.c' object='tiny-AES-c/falcon-aes.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(falcon_CFLAGS) $(CFLAGS) -c -o tiny-AES-c/falcon-aes.obj `if test -f 'tiny-AES-c/aes.c'; then $(CYGPATH_W) 'tiny-AES-c/aes.c'; else $(CYGPATH_W) '$(srcdir)/tiny-AES-c/aes.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -656,6 +704,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f src/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/$(am__dirstamp)
+	-rm -f tiny-AES-c/$(DEPDIR)/$(am__dirstamp)
+	-rm -f tiny-AES-c/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -666,7 +716,8 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f src/$(DEPDIR)/boot0.Po
+		-rm -f src/$(DEPDIR)/falcon-boot0.Po
+	-rm -f tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -714,7 +765,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f src/$(DEPDIR)/boot0.Po
+		-rm -f src/$(DEPDIR)/falcon-boot0.Po
+	-rm -f tiny-AES-c/$(DEPDIR)/falcon-aes.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

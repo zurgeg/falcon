@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "boot1_key.h": "c"
+        "boot1_key.h": "c",
+        "registers.h": "c"
     }
 }

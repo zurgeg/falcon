@@ -1,85 +1,81 @@
-// Reimpl of boot0.s in C
-
-/*
-FFFF0040                 MOV     R1, #0
-FFFF0044                 MOV     R4, #0
-FFFF0048                 MOV     R11, #0
-FFFF004C                 MOV     R11, #0
-FFFF0050                 MOV     LR, #0
-*/
-#include <boot1_key.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <registers.h>
+#include <memory.h>
+#include <math.h>
 #include <stdlib.h>
-#include <assert.h>
-unsigned int *global0; // r1
-int global1 = 0x0; // r4
-int global2 = 0x0; // r11
+#include <stdio.h>
+#include <boot1_key.h>
+#include "hw/aes_eng.h"
 
-unsigned int* memory;
+unsigned int *registers;
+unsigned int *memory;
+unsigned int *sp;
 
-// main
-void realmain(){
-    int var1, var3, var4, var5, var6; // registers
-    int returnValue; // LR
-    global0 = (unsigned int*)malloc(16); // R1 is used to store the AES key
-    unsigned int *var2 = (uint32_t*)malloc(16); 
-    memory =  (unsigned int *)malloc(0x3D09000); // we don't need this much ram
-    // but whatever
-    int *aesCommandRegister = memory + 0xD800060; // AES command register (D800060)
-    // MOV     R12, SP
-    var1 = 0xD417C00; // top of SRAM, R12
-    // SP is set to 0xD417C00 in _start, so it doesn't matter
-    // STMFD   SP!, {R4-R12,LR,PC}
-    // push args onto stack(?)
-    // MOV     R3, #0xD000000
-    *var2 = 0xD000000; // R3
-    printf("var2 addr = %u var2 val = %d\n", var2, *var2);
-    // SUB     R11, R12, #4
-    global2 = var1 - 0x4;
-    // ADD     R3, R3, #0x20000 ; R3 = 0D020000 = AES command reg
-    *var2 = *var2 + 0x20000; // why wasn't this the case when init?
-    var3 = 0; // R9
-    var4 = 7; // R1
-    var5 = 0xD800000; // R2
-    // STR     R1, [R2,#0x60]
-    *(memory + (var5 + 60)) = var4;
-    // SUB     R2, R11, #0x54
-    var5 = global2 - 0x54;
-    // STR     R9, [R3]         ; write 0 to AES command reg
-    // R3 is used as a pointer here, but
-    // it just points to AES command register so
-    // we dereference it into R9 (var3)
-    var3 = *aesCommandRegister;
-    printf("setting boot1 key\n");
-    *global0 = BOOT1_KEY_P1; // r1 is the boot1 key
-    *(global0 + 4) = BOOT1_KEY_P2;
-    *(global0 + 8) = BOOT1_KEY_P3;
-    *(global0 + 12) = BOOT1_KEY_P4; // please help
-    assert((*global0 == BOOT1_KEY_P1));
-    *(memory + 0xD417BA8) = var3; // what is this on real hw?
-    var6 = *var2; // R0
-    var5 = 3;
-    returnValue = 0xD400000;
-    printf("set_AES_key start\n");
-    for (var5 >= 0; var5--;) {
-        // why is this set inside the loop?
-        *var2 = *global0; // help me
-        *(var2 + 4) = *(global0 + 4);
-        *(var2 + 8) = *(global0 + 8);
-        *(var2 + 12) = *(global0 + 12);
-        // STR     R3, [R0,#0xC]
-        // is this really needed? the AES key is stored in a C file
-    }
-    printf("set_AES_key loop done\n");
-    var1 = 0xD000000;
-    global0 = 0; // R1 IS NORMAL NOW
-    var1 = var1 + 0x20000;
-    var5 = 3;
-    printf("set_AES_iv start\n");
+void pushOntoStack(unsigned int *armRegister){
+    *sp = *armRegister;
+    sp += sizeof(*armRegister);
 }
 
-// _start
-void main(){
-    realmain();
+// pushes r4-r14 onto stack
+void pushRegisters(){
+    for (int i = R4; i <= R14; i = i + 4){
+        pushOntoStack((registers + i));
+    }
+}
+
+void dump(){
+    printf("---Registers---\n");
+    for (int i = R0; i <= R14; i = i + 4){
+        printf("R%d = %d\n", (int)round(i / 4), *(registers + i));
+    }
+}
+
+void boot0_main(){
+    unsigned int *boot1_key_ptr = (unsigned int*)malloc(0xFFFF); // we kinda cheat here
+    *(boot1_key_ptr) = (unsigned long)BOOT1_KEY_P1;
+    *(boot1_key_ptr + 4) = (unsigned long)BOOT1_KEY_P2;
+    *(boot1_key_ptr + 8) = (unsigned long)BOOT1_KEY_P3;
+    *(boot1_key_ptr + 12) = (unsigned long)BOOT1_KEY_P4;
+    *(registers + R12) = *sp; // preserve SP onto R12
+    // I don't see why you'd want that but
+    // whatever
+    pushRegisters();
+    *(registers + R3) = 0xD000000;
+    *(registers + R11) = *(registers + R12) + 4;
+    *(registers + R3) += 0x20000; // AES command register
+    *(registers + R9) = 0;
+    *(registers + R1) = 7;
+    *(registers + R2) = 0xD800000;
+    printf("boot1 key");
+    *(memory + *(registers + R2) + 0x60) = *(registers + R1);
+    *(registers + R2) = *(registers + R11) - 0x54;
+    *(registers + R9) = *(memory + *(registers + R3));
+    *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
+    *(registers + R0) = *(registers + R3);
+    *(registers + LR) = 0xD400000;
+    *(registers + R2) = 3;
+    
+
+}
+
+int main(){
+    printf("Initializing boot0...\n");
+    // registers
+    registers = (unsigned int*)malloc(4 * 15);
+    // this is probably way too much ram than is needed for the boot
+    // process, but whatever...
+    memory = (unsigned int*)malloc(0xE000000); // 234MB
+    sp = registers + SP; 
+    printf("registers and mem alloc'd\nmemory = %ld\nregister = %ld\n",
+        (unsigned long)memory, (unsigned long)registers
+    );
+    printf("@ asm _start\n");
+    *(registers + R1) = 0;
+    *(registers + R4) = 0;
+    *(registers + R11) = 0;
+    *(registers + R11) = 0; // ??????????????
+    printf("Starting boot0...\n");
+    boot0_main();
+    printf("!!!  P  A  N  I  C  !!!\nBOOT0 CRASH!\n===DUMP===\n");
+    dump();
+    return 0;
 }
