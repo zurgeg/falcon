@@ -8,7 +8,7 @@
 #define AES_DEST          0x0d020008
 #define AES_KEY           0x0d02000c
 #define AES_IV            0x0d020010
-#define GET_KTH_BIT(n, k) (n >> k) & 1
+#define GET_KTH_BIT(n, k) ((n >> k) & 1)
 
-void callAESEngine(unsigned int *memory){}
+void callAESEngine(unsigned int *memory);
 #endif // _AES_ENG_H
