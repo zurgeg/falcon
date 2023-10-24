@@ -41,14 +41,12 @@ void boot0_main(){
     // I don't see why you'd want that but
     // whatever
     pushRegisters();
-    printf("regs pushed\n");
-    *(registers + R3) = 0xD000000;
+    *(registers + R3) = 0xD000000; // <- ADDRESS BOUNDARY ERROR HERE
     *(registers + R11) = *(registers + R12) + 4;
     *(registers + R3) += 0x20000; // AES command register
     *(registers + R9) = 0;
     *(registers + R1) = 7;
     *(registers + R2) = 0xD800000;
-    printf("boot1 key");
     *(memory + *(registers + R2) + 0x60) = *(registers + R1);
     *(registers + R2) = *(registers + R11) - 0x54;
     *(registers + R9) = *(memory + *(registers + R3));
