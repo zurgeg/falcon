@@ -4,9 +4,9 @@ autom4te.cache
 config.log
 config.status
 # Build stuff
-*.o
-*/.deps
-*/.dirstamp
+**/*.o
+**/.deps
+**/.dirstamp
 Makefile
 # gdb
 .gdb_history 
