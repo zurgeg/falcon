@@ -47,7 +47,11 @@ void boot0_main(){
     *(registers + R9) = 0;
     *(registers + R1) = 7;
     *(registers + R2) = 0xD800000;
+    //---DEBUG POLICE LINE---DO NOT CROSS---
+    printf("%ld\n", (unsigned long)(memory + *(registers + R2) + 0x60));
     *(memory + *(registers + R2) + 0x60) = *(registers + R1); // <- ADDRESS BOUNDARY ERROR HERE
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ <- here
+    //---DEBUG POLICE LINE---DO NOT CROSS---
     *(registers + R2) = *(registers + R11) - 0x54;
     *(registers + R9) = *(memory + *(registers + R3));
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
