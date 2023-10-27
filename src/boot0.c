@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <boot1_key.h>
 #include "hw/aes_eng.h"
+#include <config/config.h>
 
 #define OFFSET 0xD000000
 
@@ -68,6 +69,8 @@ void boot0_main(){
     FFFF0158                 BPL     set_AES_key
     */
    printf("setting aes key...\n");
+   #ifdef ENABLE_BOOT0_SECURITY
+   #warning "boot0 signing is unfinished! Good luck..."
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(memory + *(registers + R1)); *(registers + R1) += 4;
@@ -80,6 +83,7 @@ void boot0_main(){
     printf("set aes key for boot1\n");
     // Jump not taken
     *(registers + R1) = (unsigned long)boot1_iv_ptr;
+    #endif
 
 }
 
