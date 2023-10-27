@@ -3313,7 +3313,7 @@ then :
   enableval=$enable_boot0_security;
 fi
 
-if test "x$enable_boot0-security" = "xyes"
+if test "x$enable_boot0_security" = "xyes"
 then :
 
 
