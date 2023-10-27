@@ -6,6 +6,8 @@
 #include <boot1_key.h>
 #include "hw/aes_eng.h"
 
+#define OFFSET 0xD000000
+
 unsigned int *registers;
 unsigned int *memory;
 unsigned int *sp;
@@ -88,7 +90,7 @@ int main(){
     registers = (unsigned int*)malloc(4 * 15);
     // this is probably way too much ram than is needed for the boot
     // process, but whatever...
-    memory = (unsigned int*)malloc(0xF000000); // 234MB
+    memory = (unsigned int*)malloc(0xD000000); // 234MB
     sp = registers + SP; 
     printf("registers and mem alloc'd\nmemory = %ld\nregister = %ld\n",
         (unsigned long)memory, (unsigned long)registers
