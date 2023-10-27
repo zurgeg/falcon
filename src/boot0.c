@@ -60,7 +60,7 @@ void boot0_main(){
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
     *(registers + R0) = *(registers + R3);
     *(registers + LR) = 0xD400000 - OFFSET;
-    *(registers + R2) = 3; // number of loops
+    *(registers + R2) = 4; // number of loops
     /* set_AES_key */
     /*
     FFFF014C                 LDR     R3, [R1],#4     ; use hardcoded boot1 key
@@ -70,7 +70,7 @@ void boot0_main(){
     */
    #ifdef ENABLE_BOOT0_SECURITY
    printf("setting aes key...\n");
-   while (*(registers + R2) >= 0){
+   while (*(registers + R2) >= 1 ){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
