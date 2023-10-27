@@ -88,7 +88,7 @@ int main(){
     registers = (unsigned int*)malloc(4 * 15);
     // this is probably way too much ram than is needed for the boot
     // process, but whatever...
-    memory = (unsigned int*)malloc(0xE000000); // 234MB
+    memory = (unsigned int*)malloc(0xF000000); // 234MB
     sp = registers + SP; 
     printf("registers and mem alloc'd\nmemory = %ld\nregister = %ld\n",
         (unsigned long)memory, (unsigned long)registers
