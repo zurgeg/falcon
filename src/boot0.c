@@ -68,13 +68,12 @@ void boot0_main(){
     FFFF0158                 BPL     set_AES_key
     */
    printf("setting aes key...\n");
-   
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(memory + *(registers + R1)); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
         // why >:(
-        *(memory + (*(registers + R0)) + 0xC) = *(registers + R3);
+        *(memory + *(registers + R0) + 0xC) = *(registers + R3);
         // BPL     set_AES_key; jump back if pos flag is cleared
         // ; a.k.a checks if the R2 subtract ended with a negative number (R2 >= 0)
     }
