@@ -70,7 +70,7 @@ void boot0_main(){
     */
    #ifdef ENABLE_BOOT0_SECURITY
    printf("setting aes key...\n");
-   while (*(registers + R2) >= 1 ){
+   while (*(registers + R2) >= 1){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
@@ -82,6 +82,17 @@ void boot0_main(){
     printf("set aes key for boot1\n");
     // Jump not taken
     *(registers + R1) = (unsigned long)boot1_iv_ptr;
+    *(registers + R12) += 0x20000;
+    *(registers + R2) = 4; // reset R2 for next loop
+    printf("settings aes iv...\n");
+    /* set_AES_iv */
+    // similar situation to the key (in fact, this code is just copy-pasted
+    // from the set_AES_key code with some modifications)
+    while (*(registers + R2) >= 1){
+        *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
+        *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
+        *(memory + *(registers + R12) + 0x10) = *(registers + R3);
+    }
     #endif
 
 }
