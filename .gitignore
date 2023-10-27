@@ -3,12 +3,14 @@ aclocal.m4
 autom4te.cache
 config.log
 config.status
+stamp-h1
 # Build stuff
 **/*.o
 **/.deps
 **/.dirstamp
 *.diff
 Makefile
+config.h
 # gdb
 .gdb_history 
 # Executables
