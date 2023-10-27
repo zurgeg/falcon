@@ -31,7 +31,7 @@ void dump(){
 
 void boot0_main(){
     unsigned int *boot1_key_ptr = (unsigned int*)malloc(0xFFFF); // we kinda cheat here
-    //unsigned int *boot1_iv_ptr = (unsigned int*)malloc(16);
+    unsigned int *boot1_iv_ptr = (unsigned int*)malloc(16);
     // boot1 IV is empty...
     *(boot1_key_ptr) = (unsigned long)BOOT1_KEY_P1;
     *(boot1_key_ptr + 4) = (unsigned long)BOOT1_KEY_P2;
@@ -47,21 +47,13 @@ void boot0_main(){
     *(registers + R9) = 0;
     *(registers + R1) = 7;
     *(registers + R2) = 0xD800000;
-    printf("start of debug line hit\n");
-    //---DEBUG POLICE LINE---DO NOT CROSS---
-    //*(memory + *(registers + R2) + 0x60) = *(registers + R1); // here
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  <- specifically here
-    // nullptr dereference?
-    //---DEBUG POLICE LINE---DO NOT CROSS---
-    printf("end of debug line hit\n");
-    printf("start of debug line hit\n");
+    // segfault 1 happens here!
+    *(memory + *(registers + R2) + 0x60) = *(registers + R1); // here
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  <- specifically here
     *(registers + R2) = *(registers + R11) - 0x54;
-    //---DEBUG POLICE LINE---DO NOT CROSS---
-    //*(registers + R9) = *(memory + *(registers + R3)); // here
+    // segfault 2 happens here!
+    *(registers + R9) = *(memory + *(registers + R3)); // here
     //^^^^^^^^^^^^^^^^^  <- specifically here
-    // probably outofbounds read
-    //---DEBUG POLICE LINE---DO NOT CROSS---
-    printf("end of debug line hit\n");
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
     *(registers + R0) = *(registers + R3);
     *(registers + LR) = 0xD400000;
@@ -74,7 +66,7 @@ void boot0_main(){
     FFFF0158                 BPL     set_AES_key
     */
    printf("setting aes key...\n");
-   /*
+   
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
         *(registers + R3) = *(memory + (*registers + R1)); *(registers + R1) += 4;
@@ -87,8 +79,6 @@ void boot0_main(){
     printf("set aes key for boot1\n");
     // Jump not taken
     *(registers + R1) = (unsigned long)boot1_iv_ptr;
-    */
-   // the code above is invalid due to the debugging
 
 }
 
