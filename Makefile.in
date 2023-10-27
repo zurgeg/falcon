@@ -281,7 +281,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 falcon_SOURCES = src/boot0.c src/hw/aes_eng.c tiny-AES-c/aes.c
-falcon_CFLAGS = -Wall -Wpedantic -Werror
+falcon_CFLAGS = -Wall -Wpedantic -Werror --warn-no-unused-variable
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
