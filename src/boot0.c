@@ -72,7 +72,7 @@ void boot0_main(){
    printf("setting aes key...\n");
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
-        *(registers + R3) = *(memory + *(registers + R1)); *(registers + R1) += 4;
+        *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
         // why >:(
         *(memory + *(registers + R0) + 0xC) = *(registers + R3);
