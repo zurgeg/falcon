@@ -58,7 +58,7 @@ void boot0_main(){
     //^^^^^^^^^^^^^^^^^  <- specifically here
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
     *(registers + R0) = *(registers + R3);
-    *(registers + LR) = 0xD400000;
+    *(registers + LR) = 0xD400000 - OFFSET;
     *(registers + R2) = 3; // number of loops
     /* set_AES_key */
     /*
