@@ -68,8 +68,8 @@ void boot0_main(){
     FFFF0154                 STR     R3, [R0,#0xC]
     FFFF0158                 BPL     set_AES_key
     */
-   printf("setting aes key...\n");
    #ifdef ENABLE_BOOT0_SECURITY
+   printf("setting aes key...\n");
    #warning "boot0 signing is unfinished! Good luck..."
    while (*(registers + R2) >= 0){
         // LDR     R3, [R1],#4
