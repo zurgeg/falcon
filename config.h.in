@@ -1,5 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
-#define ENABLE_BOOT0_SECURITY
+
 /* Enables boot1 signing. Recommended if you want an "authentic" boot0 */
 #undef ENABLE_BOOT0_SECURITY
 
