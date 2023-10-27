@@ -43,12 +43,12 @@ void boot0_main(){
     // I don't see why you'd want that but
     // whatever
     pushRegisters();
-    *(registers + R3) = 0xD000000;
+    *(registers + R3) = 0xD000000 - OFFSET;
     *(registers + R11) = *(registers + R12) + 4;
     *(registers + R3) += 0x20000; // AES command register
     *(registers + R9) = 0;
     *(registers + R1) = 7;
-    *(registers + R2) = 0xD800000;
+    *(registers + R2) = 0xD800000 - OFFSET;
     // segfault 1 happens here!
     *(memory + *(registers + R2) + 0x60) = *(registers + R1); // here
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  <- specifically here
