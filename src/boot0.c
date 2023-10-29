@@ -10,9 +10,9 @@
 
 #define OFFSET 0xD000000
 
-unsigned int *registers;
-unsigned int *memory;
-unsigned int *sp;
+wiiRegister registers;
+wiiMemPtr memory;
+wiiRegister sp;
 
 void pushOntoStack(unsigned int *armRegister){
     *sp = *armRegister;
@@ -145,12 +145,12 @@ void boot0_main(){
 int main(){
     printf("Initializing boot0...\n");
     // registers
-    registers = (unsigned int*)malloc(4 * 15);
+    registers = (wiiRegister)malloc(4 * 15);
     // this is probably way too much ram than is needed for the boot
     // process, but whatever...
-    memory = (unsigned int*)malloc(0xD000000); // 234MB
+    memory = (wiiMemPtr)malloc(0xD000000); // 234MB
     sp = registers + SP; 
-    printf("registers and mem alloc'd\nmemory = %ld\nregister = %ld\n",
+    printf("registers and mem alloc'd\nmemory = 0x%lx\nregister = 0x%lx\n",
         (unsigned long)memory, (unsigned long)registers
     );
     printf("@ asm _start\n");
