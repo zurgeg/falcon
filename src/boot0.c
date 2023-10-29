@@ -12,7 +12,7 @@
 
 wiiRegister registers;
 wiiMemPtr memory;
-wiiRegister sp;
+wiiStack *sp;
 
 void pushOntoStack(wiiRegister armRegister){
     *sp = *armRegister;
