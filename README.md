@@ -53,3 +53,6 @@ automake
 autoconf
 ```
 
+## Extra notes
+boot0 was compiled with GNU GCC 3.4.3 (see FFFF0505 in `dolsrc/arm/boot0.s`)
+
