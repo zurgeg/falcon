@@ -48,6 +48,6 @@ typedef unknown8 memoryArgument;
 
 /* AES engine types */
 // AES key (16-bytes)
-typedef unsigned int* wiiAESKey[16];
+typedef unsigned int* wiiAESKey;
 // IV (16-bytes, maybe too big?)
-typedef unsigned int* wiiIV[16];
+typedef unsigned int* wiiIV;
