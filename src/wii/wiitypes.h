@@ -15,9 +15,9 @@ wiiStack* stackPointer; // bottom of stack
 *(wiiStack - 1) = 0xde; stackPointer--;
 ```
 */
-typedef unsigned int* wiiStackValue;
+typedef unsigned int wiiStackValue;
 // An array of stack values
-typedef wiiStackValue wiiStack[];
+typedef wiiStackValue wiiStack;
 
 /* placeholder types */
 // 8-bit value
