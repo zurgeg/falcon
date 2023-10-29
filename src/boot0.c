@@ -36,7 +36,7 @@ void dump(){
 
 
 void boot0_main(){
-    wiiAESKey boot1_key_ptr = (wiiAESKey)malloc(0xFFFF); // we kinda cheat here
+    wiiAESKey boot1_key_ptr = (wiiAESKey)malloc(0xFFFF);
     wiiIV boot1_iv_ptr = (wiiIV)malloc(16);
     // boot1 IV is empty...
     *(boot1_key_ptr) = (unsigned long)BOOT1_KEY_P1;
