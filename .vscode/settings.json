@@ -4,7 +4,8 @@
         "registers.h": "c",
         "wiitypes.h": "c",
         "aes.h": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "aes_eng.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
