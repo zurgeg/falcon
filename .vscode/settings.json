@@ -3,7 +3,8 @@
         "boot1_key.h": "c",
         "registers.h": "c",
         "wiitypes.h": "c",
-        "aes.h": "c"
+        "aes.h": "c",
+        "config.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
