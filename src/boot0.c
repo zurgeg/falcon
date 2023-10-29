@@ -14,7 +14,7 @@ wiiRegister registers;
 wiiMemPtr memory;
 wiiRegister sp;
 
-void pushOntoStack(unsigned int *armRegister){
+void pushOntoStack(wiiRegister armRegister){
     *sp = *armRegister;
     sp += sizeof(*armRegister);
 }
