@@ -6,7 +6,8 @@
         "aes.h": "c",
         "config.h": "c",
         "aes_eng.h": "c",
-        "random": "c"
+        "random": "c",
+        "stdbool.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

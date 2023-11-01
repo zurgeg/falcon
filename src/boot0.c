@@ -13,6 +13,7 @@
 #define YES_OR_NO(b) b ? "Yes" : "No"
 
 wiiRegister registers;
+wiiMemPtr mem1Uncached;
 wiiMemPtr mem2Uncached;
 wiiStack *sp;
 
@@ -178,6 +179,7 @@ int main(){
     registers = (wiiRegister)malloc(4 * 15);
     // this is probably way too much ram than is needed for the boot
     // process, but whatever...
+    mem1Uncached = (wiiMemPtr)malloc(0x16E3600); // 24MB
     mem2Uncached = (wiiMemPtr)malloc(0x3D09000); // 64MB
     sp = registers + SP; 
     printf("registers and mem alloc'd\nmemory = 0x%lx\nregister = 0x%lx\n",
