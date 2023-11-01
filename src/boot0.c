@@ -3,12 +3,14 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <boot1_key.h>
 #include "hw/aes_eng.h"
 #include "wii/wiitypes.h"
 #include "../config.h"
 
 #define OFFSET 0xD000000
+#define YES_OR_NO(b) b ? "Yes" : "No"
 
 wiiRegister registers;
 wiiMemPtr memory;
@@ -31,6 +33,12 @@ void dump(){
     for (int i = R0; i <= R14; i = i + 4){
         printf("R%d = 0x%x\n", (int)round(i / 4), *(registers + i));
     }
+    printf("---Falcon Information---\n");
+    printf("Current stage: boot0 (Nintendo)\n");
+    printf("Falcon version: %s\n", PACKAGE_VERSION);
+    printf("---Build options---\n");
+    printf("Use boot0 security? %s\n", YES_OR_NO(ENABLE_BOOT0_SECURITY));
+    printf("Memory offset: 0x%x", OFFSET);
 }
 
 
@@ -115,24 +123,46 @@ void boot0_main(){
     // FFFF01A4                 STR     R2, [R1,#0xC]
     *(memory + *(registers + R1) + 0xC) = *(registers + R2); 
     // FFFF01A8                 LDR     R2, =0x10325476
+    *(registers + R2) = 0x10325476;
     // FFFF01AC                 STR     R3, [R1,#0x10]
+    *(memory + *(registers + R1) + 0x10) = *(registers + R3);
     // FFFF01B0                 LDR     R3, =0xC3D2E1F0
+    *(registers + R3) = 0xC3D2E1F0;
     // FFFF01B4                 STR     R2, [R1,#0x14]
+    *(memory + *(registers + R1) + 0x14) = *(registers + R2);
     // FFFF01B8                 MOV     R2, #0xD400000
+    *(registers + R2) = 0xD400000 - OFFSET;
     // FFFF01BC                 STR     R3, [R1,#0x18]
+    *(memory + *(registers + R1) + 0x18) = *(registers + R3);
     // FFFF01C0                 STR     R2, [R1,#4]
+    *(memory + *(registers + R1) + 0x4) = *(registers + R2);
     // FFFF01C4                 MOVL    R3, 0xD010000
+    *(registers + R3) = 0xD010000 - OFFSET;
     // FFFF01CC                 LDR     R2, [R3,#4]
+    *(registers + R2) = *(memory + *(registers + R3) + 0x4);
     // FFFF01D0                 MOVL    R1, 0x80FF0000
+    *(registers + R3) = 0x80FF0000 - OFFSET; // TODO: Does MEM1 call for
+    // special treatement?
+    printf("R3 was set to a mem1 value %d\n", *(registers + R3));
     // FFFF01D8                 ORR     R2, R2, #0x8000000
+    *(registers + R2) = *(registers + R2) | 0x8000000;
     // FFFF01DC                 ADD     R1, R1, #0x8000
+    *(registers + R1) += 0x8000;
     // FFFF01E0                 STR     R2, [R3,#4]
+    *(memory + *(registers + R3) + 4) = *(registers + R2);
     // FFFF01E4                 MOV     R4, #0xD800000
+    *(registers + R3) = 0xD800000 - OFFSET;
+    /* clearing memory values? Apepars to be from 0x8-0xC*/
     // FFFF01E8                 STR     R0, [R3,#0x10]
+    *(memory + *(registers + R3) + 0x10) = *(registers + R0);
     // FFFF01EC                 STR     R0, [R3,#0x14]
+    *(memory + *(registers + R3) + 0x14) = *(registers + R0);
     // FFFF01F0                 STR     R0, [R3,#8]
+    *(memory + *(registers + R3) + 0x8) = *(registers + R0);
     // FFFF01F4                 STR     R0, [R3,#0xC]
+    *(memory + *(registers + R3) + 0xC) = *(registers + R0);
     // FFFF01F8                 STR     R1, [R3]
+    *(memory + *(registers + R3)) = *(registers + R1);
     // FFFF01FC                 MOV     R3, #0x80000000
     // FFFF0200                 MOV     R6, R0
     // FFFF0204                 STR     R3, [R4,#0x1EC] ; 0D8001EC = 0x80000000

@@ -1,3 +1,5 @@
+# WARNING: Falcon has not been tested to work on real hardware, and is not meant to
+If you somehow build Falcon and get it running on real hardware, that is a lot of work you have put in in order to break your Wii beyond any and all repair
 # Falcon
 
 Falcon reimplements boot0, boot1, boot2, and the System Menu in C.
