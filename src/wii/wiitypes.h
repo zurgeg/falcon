@@ -1,5 +1,5 @@
 /* General types */
-// Memory pointer (basically a reminder to subtract #OFFSET)
+// Memory pointer (basically a reminder to subtract #MEM2_UNCACHED_OFFSET)
 typedef unsigned int* wiiMemPtr;
 // Semi-useless type for organization's sake
 typedef unsigned int* wiiRegister;

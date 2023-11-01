@@ -9,11 +9,11 @@
 #include "wii/wiitypes.h"
 #include "../config.h"
 
-#define OFFSET 0xD000000
+#define MEM2_UNCACHED_OFFSET 0xD000000
 #define YES_OR_NO(b) b ? "Yes" : "No"
 
 wiiRegister registers;
-wiiMemPtr memory;
+wiiMemPtr mem2Uncached;
 wiiStack *sp;
 
 void pushOntoStack(wiiRegister armRegister){
@@ -38,7 +38,7 @@ void dump(){
     printf("Falcon version: %s\n", PACKAGE_VERSION);
     printf("---Build options---\n");
     printf("Use boot0 security? %s\n", YES_OR_NO(ENABLE_BOOT0_SECURITY));
-    printf("Memory offset: 0x%x", OFFSET);
+    printf("Memory offset: 0x%x", MEM2_UNCACHED_OFFSET);
 }
 
 
@@ -55,18 +55,18 @@ void boot0_main(){
     // I don't see why you'd want that but
     // whatever
     pushRegisters();
-    *(registers + R3) = 0xD000000 - OFFSET;
+    *(registers + R3) = 0xD000000 - MEM2_UNCACHED_OFFSET;
     *(registers + R11) = *(registers + R12) + 4;
     *(registers + R3) += 0x20000; // AES command register
     *(registers + R9) = 0;
     *(registers + R1) = 7;
-    *(registers + R2) = 0xD800000 - OFFSET;
-    *(memory + *(registers + R2) + 0x60) = *(registers + R1);
+    *(registers + R2) = 0xD800000 - MEM2_UNCACHED_OFFSET;
+    *(mem2Uncached + *(registers + R2) + 0x60) = *(registers + R1);
     *(registers + R2) = *(registers + R11) - 0x54;
-    *(registers + R9) = *(memory + *(registers + R3));
+    *(registers + R9) = *(mem2Uncached + *(registers + R3));
     *(registers + R1) = (unsigned long)boot1_key_ptr; // boot1 key
     *(registers + R0) = *(registers + R3);
-    *(registers + LR) = 0xD400000 - OFFSET;
+    *(registers + LR) = 0xD400000 - MEM2_UNCACHED_OFFSET;
     *(registers + R2) = 4; // number of loops
     /* set_AES_key */
     /*
@@ -82,7 +82,7 @@ void boot0_main(){
         *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
         // why >:(
-        *(memory + *(registers + R0) + 0xC) = *(registers + R3);
+        *(mem2Uncached + *(registers + R0) + 0xC) = *(registers + R3);
         // BPL     set_AES_key; jump back if pos flag is cleared
         // ; a.k.a checks if the R2 subtract ended with a negative number (R2 >= 0)
     }
@@ -98,50 +98,50 @@ void boot0_main(){
     while (*(registers + R2) >= 1){
         *(registers + R3) = *(registers + R1); *(registers + R1) += 4;
         *(registers + R2) = *(registers + R2) - 1; // pointers don't support --
-        *(memory + *(registers + R12) + 0x10) = *(registers + R3);
+        *(mem2Uncached + *(registers + R12) + 0x10) = *(registers + R3);
     }
     printf("set aes iv\n");
     /* oh no */
     *(registers + R3) = 0x67452301; // initial SHA context
-    *(registers + R1) = 0xD030000 - OFFSET; // AFAIK there's no difference
+    *(registers + R1) = 0xD030000 - MEM2_UNCACHED_OFFSET; // AFAIK there's no difference
     // between MOVL and MOV we need to watch out for here...
     *(registers + R0) = 0;
     *(registers + R2) = 0xEFCDAB89;
     // FFFF0190                 STR     LR, [R12,#4]
-    *(memory + *(registers + R12 + 0x4)) = *(registers + LR);
+    *(mem2Uncached + *(registers + R12 + 0x4)) = *(registers + LR);
     // FFFF0194                 STR     LR, [R12,#8]
-    *(memory + *(registers + R12) + 0x8) = *(registers + LR);
+    *(mem2Uncached + *(registers + R12) + 0x8) = *(registers + LR);
     // FFFF0198                 STR     R0, [R1]
-    *(memory + *(registers + R1)) = *(registers + R0);
+    *(mem2Uncached + *(registers + R1)) = *(registers + R0);
     // FFFF019C                 STR     R3, [R1,#8]
-    *(memory + *(registers + R1) + 0x8) = *(registers + R3);
+    *(mem2Uncached + *(registers + R1) + 0x8) = *(registers + R3);
     // FFFF01A0                 LDR     R3, =0x98BADCFE
     *(registers + R3) = 0x98BADCFE; // the coffee wasn't
     // THAT bad
     // In all seriousness, that's part 3/5 of the boot1
     // SHA1
     // FFFF01A4                 STR     R2, [R1,#0xC]
-    *(memory + *(registers + R1) + 0xC) = *(registers + R2); 
+    *(mem2Uncached + *(registers + R1) + 0xC) = *(registers + R2); 
     // FFFF01A8                 LDR     R2, =0x10325476
     *(registers + R2) = 0x10325476;
     // FFFF01AC                 STR     R3, [R1,#0x10]
-    *(memory + *(registers + R1) + 0x10) = *(registers + R3);
+    *(mem2Uncached + *(registers + R1) + 0x10) = *(registers + R3);
     // FFFF01B0                 LDR     R3, =0xC3D2E1F0
     *(registers + R3) = 0xC3D2E1F0;
     // FFFF01B4                 STR     R2, [R1,#0x14]
-    *(memory + *(registers + R1) + 0x14) = *(registers + R2);
+    *(mem2Uncached + *(registers + R1) + 0x14) = *(registers + R2);
     // FFFF01B8                 MOV     R2, #0xD400000
-    *(registers + R2) = 0xD400000 - OFFSET;
+    *(registers + R2) = 0xD400000 - MEM2_UNCACHED_OFFSET;
     // FFFF01BC                 STR     R3, [R1,#0x18]
-    *(memory + *(registers + R1) + 0x18) = *(registers + R3);
+    *(mem2Uncached + *(registers + R1) + 0x18) = *(registers + R3);
     // FFFF01C0                 STR     R2, [R1,#4]
-    *(memory + *(registers + R1) + 0x4) = *(registers + R2);
+    *(mem2Uncached + *(registers + R1) + 0x4) = *(registers + R2);
     // FFFF01C4                 MOVL    R3, 0xD010000
-    *(registers + R3) = 0xD010000 - OFFSET;
+    *(registers + R3) = 0xD010000 - MEM2_UNCACHED_OFFSET;
     // FFFF01CC                 LDR     R2, [R3,#4]
-    *(registers + R2) = *(memory + *(registers + R3) + 0x4);
+    *(registers + R2) = *(mem2Uncached + *(registers + R3) + 0x4);
     // FFFF01D0                 MOVL    R1, 0x80FF0000
-    *(registers + R3) = 0x80FF0000 - OFFSET; // TODO: Does MEM1 call for
+    *(registers + R3) = 0x80FF0000 - MEM2_UNCACHED_OFFSET; // TODO: Does MEM1 call for
     // special treatement?
     printf("R3 was set to a mem1 value %d\n", *(registers + R3));
     // FFFF01D8                 ORR     R2, R2, #0x8000000
@@ -149,20 +149,20 @@ void boot0_main(){
     // FFFF01DC                 ADD     R1, R1, #0x8000
     *(registers + R1) += 0x8000;
     // FFFF01E0                 STR     R2, [R3,#4]
-    *(memory + *(registers + R3) + 4) = *(registers + R2);
+    *(mem2Uncached + *(registers + R3) + 4) = *(registers + R2);
     // FFFF01E4                 MOV     R4, #0xD800000
-    *(registers + R3) = 0xD800000 - OFFSET;
+    *(registers + R3) = 0xD800000 - MEM2_UNCACHED_OFFSET;
     /* clearing memory values? Apepars to be from 0x8-0xC*/
     // FFFF01E8                 STR     R0, [R3,#0x10]
-    *(memory + *(registers + R3) + 0x10) = *(registers + R0);
+    *(mem2Uncached + *(registers + R3) + 0x10) = *(registers + R0);
     // FFFF01EC                 STR     R0, [R3,#0x14]
-    *(memory + *(registers + R3) + 0x14) = *(registers + R0);
+    *(mem2Uncached + *(registers + R3) + 0x14) = *(registers + R0);
     // FFFF01F0                 STR     R0, [R3,#8]
-    *(memory + *(registers + R3) + 0x8) = *(registers + R0);
+    *(mem2Uncached + *(registers + R3) + 0x8) = *(registers + R0);
     // FFFF01F4                 STR     R0, [R3,#0xC]
-    *(memory + *(registers + R3) + 0xC) = *(registers + R0);
+    *(mem2Uncached + *(registers + R3) + 0xC) = *(registers + R0);
     // FFFF01F8                 STR     R1, [R3]
-    *(memory + *(registers + R3)) = *(registers + R1);
+    *(mem2Uncached + *(registers + R3)) = *(registers + R1);
     // FFFF01FC                 MOV     R3, #0x80000000
     // FFFF0200                 MOV     R6, R0
     // FFFF0204                 STR     R3, [R4,#0x1EC] ; 0D8001EC = 0x80000000
@@ -178,10 +178,10 @@ int main(){
     registers = (wiiRegister)malloc(4 * 15);
     // this is probably way too much ram than is needed for the boot
     // process, but whatever...
-    memory = (wiiMemPtr)malloc(0xD000000); // 234MB
+    mem2Uncached = (wiiMemPtr)malloc(0x3D09000); // 64MB
     sp = registers + SP; 
     printf("registers and mem alloc'd\nmemory = 0x%lx\nregister = 0x%lx\n",
-        (unsigned long)memory, (unsigned long)registers
+        (unsigned long)mem2Uncached, (unsigned long)registers
     );
     printf("@ asm _start\n");
     *(registers + R1) = 0;
