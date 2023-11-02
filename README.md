@@ -23,7 +23,9 @@ becomes
 
 ## Progress
 Bold is the current stage
-- [ ] **Psuedo-decompile boot0**
+- [x] Psuedo-decompile part of boot0
+- [ ] **Actually decompile that part of boot0**
+- [] Finish psuedo-decompiling boot0
 - [ ] Psuedo-decompile boot1
 - [ ] Psuedo-decompile boot2
 - [ ] Test against real HW behavior
